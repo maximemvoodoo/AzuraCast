@@ -440,23 +440,23 @@ final class ConfigWriter implements EventSubscriberInterface
             }
         }
 
-        if (!$station->backend_config->use_manual_autodj) {
-            $event->appendBlock(
-                <<< LIQ
-                radio = azuracast.enable_autodj(radio)
-                LIQ
-            );
-        }
+        // if (!$station->backend_config->use_manual_autodj) {
+        //     $event->appendBlock(
+        //         <<< LIQ
+        //         radio = azuracast.enable_autodj(radio)
+        //         LIQ
+        //     );
+        // }
 
         // Handle remote URL fallbacks.
-        if (null !== $fallbackRemoteUrl) {
-            $event->appendBlock(
-                <<< LIQ
-                remote_url = {$fallbackRemoteUrl}
-                radio = fallback(id="fallback_remote_url", track_sensitive = false, [remote_url, radio])
-                LIQ
-            );
-        }
+        // if (null !== $fallbackRemoteUrl) {
+        //     $event->appendBlock(
+        //         <<< LIQ
+        //         remote_url = {$fallbackRemoteUrl}
+        //         radio = fallback(id="fallback_remote_url", track_sensitive = false, [remote_url, radio])
+        //         LIQ
+        //     );
+        // }
 
         $requestsQueueName = LiquidsoapQueues::Requests->value;
         $interruptingQueueName = LiquidsoapQueues::Interrupting->value;
@@ -486,6 +486,13 @@ final class ConfigWriter implements EventSubscriberInterface
                 );
             }
         }
+
+        // CLVBS custom metadata for DJ_ID (set in album field)
+        $event->appendLines(['#CLVBS custom metadata for DJ_ID (set in album field)',
+        'def override_metadata(m) =',
+        '     [("title", "{\'artist\':\'"^m["artist"]^"\',\'title\':\'"^m["title"]^"\',\'DJ_ID\':\'"^m["album"]^"\'}"),("artist", "")]',
+        'end',
+        'radio = metadata.map(override_metadata, radio)']);
     }
 
     public function writeCrossfadeConfiguration(WriteLiquidsoapConfiguration $event): void
@@ -1071,34 +1078,34 @@ final class ConfigWriter implements EventSubscriberInterface
         $startTime = $playlistSchedule->start_time;
         $endTime = $playlistSchedule->end_time;
 
-        // Handle multi-day playlists.
-        if ($startTime > $endTime) {
-            $playTimes = [
-                self::formatTimeCode($startTime) . '-23h59m59s',
-                '00h00m-' . self::formatTimeCode($endTime),
-            ];
+        // // Handle multi-day playlists.
+        // if ($startTime > $endTime) {
+        //     $playTimes = [
+        //         self::formatTimeCode($startTime) . '-23h59m59s',
+        //         '00h00m-' . self::formatTimeCode($endTime),
+        //     ];
 
             $playlistScheduleDays = $playlistSchedule->days;
             if (!empty($playlistScheduleDays) && count($playlistScheduleDays) < 7) {
                 $currentPlayDays = [];
                 $nextPlayDays = [];
 
-                foreach ($playlistScheduleDays as $day) {
-                    $currentPlayDays[] = (($day === 7) ? '0' : $day) . 'w';
+            //     foreach ($playlistScheduleDays as $day) {
+            //         $currentPlayDays[] = (($day === 7) ? '0' : $day) . 'w';
 
-                    $day++;
-                    if ($day > 7) {
-                        $day = 1;
-                    }
-                    $nextPlayDays[] = (($day === 7) ? '0' : $day) . 'w';
-                }
+            //         $day++;
+            //         if ($day > 7) {
+            //             $day = 1;
+            //         }
+            //         $nextPlayDays[] = (($day === 7) ? '0' : $day) . 'w';
+            //     }
 
-                $playTimes[0] = '(' . implode(' or ', $currentPlayDays) . ') and ' . $playTimes[0];
-                $playTimes[1] = '(' . implode(' or ', $nextPlayDays) . ') and ' . $playTimes[1];
+            //     $playTimes[0] = '(' . implode(' or ', $currentPlayDays) . ') and ' . $playTimes[0];
+            //     $playTimes[1] = '(' . implode(' or ', $nextPlayDays) . ') and ' . $playTimes[1];
             }
 
-            return '(' . implode(') or (', $playTimes) . ')';
-        }
+            // return '(' . implode(') or (', $playTimes) . ')';
+        // }
 
         // Handle once-per-day playlists.
         $playTime = ($startTime === $endTime)

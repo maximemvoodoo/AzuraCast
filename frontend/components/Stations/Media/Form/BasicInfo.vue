@@ -27,8 +27,8 @@
             <form-group-field
                 id="edit_form_genre"
                 class="col-md-6"
-                :field="r$.genre"
-                :label="$gettext('Song Genre')"
+                :field="r$.genre"                
+                :label="$gettext('DJ ID')"
             />
 
             <form-group-field

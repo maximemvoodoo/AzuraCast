@@ -65,6 +65,12 @@ final class Writer
             return [$tagValue];
         }, $writeTags);
 
+        // Removing of TXXX tags, which are currently bugged
+        if(array_key_exists("text", $tagData))
+        {
+            unset($tagData["text"]);
+        }
+
         $tagwriter->tag_data = $tagData;
         $tagwriter->WriteTags();
 

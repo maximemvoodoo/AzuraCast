@@ -39,8 +39,23 @@ trait HasScheduleDisplay
                     $scheduler->shouldSchedulePlayOnCurrentDate($scheduleItem, $tz, $i)
                     && $scheduler->isScheduleScheduledToPlayToday($scheduleItem, $dayOfWeek)
                 ) {
-                    $rowStart = StationSchedule::getDateTime($scheduleItem->start_time, $tz, $i);
-                    $rowEnd = StationSchedule::getDateTime($scheduleItem->end_time, $tz, $i);
+                    if($scheduleItem->start_date === $i->format('Y-m-d'))
+                    {
+                        $rowStart = StationSchedule::getDateTime($scheduleItem->start_time, $tz, $i);
+                    }
+                    else
+                    {
+                        $rowStart = StationSchedule::getDateTime("0000", $tz, $i);
+                    }
+                        
+                    if($scheduleItem->end_date === $i->format('Y-m-d'))
+                    {
+                        $rowEnd = StationSchedule::getDateTime($scheduleItem->end_time, $tz, $i);
+                    }
+                    else
+                    {
+                        $rowEnd = StationSchedule::getDateTime("2359", $tz, $i);
+                    }
 
                     // Handle overnight schedule items
                     if ($rowEnd < $rowStart) {
