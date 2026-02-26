@@ -2,33 +2,18 @@
 set -e
 set -x
 
+
 # Set up deb-multimedia, which has newer versions of ffmpeg and other multimedia libraries than Debian Bookworm.
-apt-get install -y --no-install-recommends gpgv
+# Remove existing ffmpeg
+sudo apt remove -y ffmpeg
 
-# Add the trusted keyring file.
-mkdir -p /tmp/ffmpeg-keyring
-cd /tmp/ffmpeg-keyring
+# Download FFmpeg 6.0.1 static build
+cd /usr/local/src
+sudo wget https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-6.0.1-amd64-static.tar.xz
 
-wget https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2024.9.1_all.deb
-sudo dpkg -i deb-multimedia-keyring_2024.9.1_all.deb
+# Extract
+sudo tar xf ffmpeg-6.0.1-amd64-static.tar.xz
 
-cd /tmp
-rm -rf /tmp/ffmpeg-keyring
-
-# Configure the APT repos.
-echo "Types: deb
-URIs: https://www.deb-multimedia.org
-Suites: stable
-Components: main non-free
-Signed-By: /usr/share/keyrings/deb-multimedia-keyring.pgp" >> /etc/apt/sources.list.d/deb-multimedia.sources
-
-echo "Package: *
-Pin: origin www.deb-multimedia.org
-Pin-Priority: 900" >> /etc/apt/preferences.d/99deb-multimedia
-
-apt-get update
-
-# Update any existing packages that were installed with older versions.
-apt-get dist-upgrade -y
-
-apt-get install -y --no-install-recommends ffmpeg
+# Install binaries
+sudo cp ffmpeg-6.0.1-amd64-static/ffmpeg /usr/local/bin/
+sudo cp ffmpeg-6.0.1-amd64-static/ffprobe /usr/local/bin/
