@@ -12,7 +12,7 @@ apt-get install -y --no-install-recommends \
   libmad0 libsndfile1 libgd3
   
 apt-get install -y --no-install-recommends \
-  libid3tag0 libboost-program-options1.74.0 libboost-filesystem1.74.0 libboost-regex1.74.0
+  libid3tag0 libboost-program-options libboost-filesystem libboost-regex
 
 wget -O /tmp/audiowaveform.deb "https://github.com/bbc/audiowaveform/releases/download/1.10.1/audiowaveform_1.10.1-1-12_${ARCHITECTURE}.deb"
 
